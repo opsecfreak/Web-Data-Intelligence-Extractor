@@ -34,11 +34,11 @@ const QACard: React.FC<QACardProps> = ({ item }) => {
   }, []);
 
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-5 transition-all duration-300 hover:shadow-teal-500/10 hover:border-teal-700 hover:-translate-y-1 flex flex-col h-full">
+    <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 transition-all duration-300 hover:shadow-teal-500/10 hover:border-teal-700 hover:-translate-y-1 flex flex-col h-full">
        <div className="flex justify-between items-start mb-2">
             <div className="flex-1 pr-4">
                 <p className="text-sm text-gray-400">Question:</p>
-                <h3 className="text-lg font-semibold text-teal-400">"{item.question}"</h3>
+                <h3 className="text-lg font-bold text-teal-400">"{item.question}"</h3>
             </div>
             <div className="relative" ref={menuRef}>
                 <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-gray-400 hover:text-white rounded-full transition">
@@ -61,13 +61,13 @@ const QACard: React.FC<QACardProps> = ({ item }) => {
             </div>
        </div>
 
-      <div className="mt-3 flex-grow">
+      <div className="mt-2 flex-grow">
         <p className="text-sm text-gray-400">Answer Summary:</p>
-        <p className="text-gray-300">{item.answerSummary}</p>
+        <p className="text-gray-300 text-sm">{item.answerSummary}</p>
       </div>
       
       {item.relatedProducts && item.relatedProducts.length > 0 && (
-        <div className="mt-4">
+        <div className="mt-3">
           <p className="text-sm text-gray-400 mb-2">Related Products Mentioned:</p>
           <div className="flex flex-wrap gap-2">
             {item.relatedProducts.map((product, index) => (
@@ -84,7 +84,7 @@ const QACard: React.FC<QACardProps> = ({ item }) => {
           href={item.threadUrl} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="inline-flex items-center text-teal-500 hover:text-teal-400 mt-4 text-sm"
+          className="inline-flex items-center text-teal-500 hover:text-teal-400 mt-3 text-sm"
         >
           <LinkIcon className="mr-2" /> View Forum Thread
         </a>

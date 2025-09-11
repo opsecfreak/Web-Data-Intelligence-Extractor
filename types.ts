@@ -25,7 +25,13 @@ export interface ScrapedData {
   qaItems: QAItem[];
 }
 
+export interface DataSources {
+  productUrls: string[];
+  forumUrls: string[];
+}
+
 export interface ScrapeOptions {
+  sources: DataSources;
   topic?: string;
   maxResults?: number;
   crawlDepth?: number;

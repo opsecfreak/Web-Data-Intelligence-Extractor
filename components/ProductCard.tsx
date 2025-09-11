@@ -36,10 +36,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
 
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-5 transition-all duration-300 hover:shadow-cyan-500/10 hover:border-cyan-700 hover:-translate-y-1 flex flex-col h-full">
+    <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 transition-all duration-300 hover:shadow-cyan-500/10 hover:border-cyan-700 hover:-translate-y-1 flex flex-col h-full">
       <div className="flex justify-between items-start">
         <div className="flex-1 pr-4">
-          <h3 className="text-xl font-bold text-cyan-400">{product.name}</h3>
+          <h3 className="text-lg font-bold text-cyan-400">{product.name}</h3>
           <p className="text-sm text-gray-400">Part #: {product.partNumber || 'N/A'}</p>
         </div>
         <div className="relative" ref={menuRef}>
@@ -62,10 +62,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             )}
         </div>
       </div>
-       <div className="text-lg font-semibold text-green-400 bg-green-900/50 px-3 py-1 rounded-md self-start my-3">
+       <div className="text-sm font-medium text-green-400 bg-green-900/50 px-2 py-0.5 rounded-md self-start my-2">
           {product.price || 'N/A'}
         </div>
-      <p className="text-gray-300 flex-grow">{product.description}</p>
+      <p className="text-gray-300 flex-grow text-sm">{product.description}</p>
       {product.url && (
         <a 
           href={product.url} 
@@ -78,19 +78,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       )}
 
       {product.mentions && product.mentions.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-700">
-          <h4 className="font-semibold text-gray-200 mb-2">Forum Intelligence:</h4>
-          <ul className="space-y-3">
+        <div className="mt-3 pt-3 border-t border-gray-700">
+          <h4 className="font-semibold text-gray-200 mb-2 text-sm">Forum Intelligence:</h4>
+          <ul className="space-y-2">
             {product.mentions.map((mention, index) => (
-              <li key={index} className="bg-gray-900/70 p-3 rounded-md">
-                <p className="text-gray-300 text-sm">"{mention.summary}"</p>
+              <li key={index} className="bg-gray-900/70 p-2 rounded-md">
+                <p className="text-gray-300 text-xs">"{mention.summary}"</p>
                 <a 
                   href={mention.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="inline-flex items-center text-xs text-cyan-600 hover:text-cyan-500 mt-1"
                 >
-                  <LinkIcon className="w-4 h-4 mr-1" /> {mention.threadTitle}
+                  <LinkIcon className="w-3 h-3 mr-1" /> {mention.threadTitle}
                 </a>
               </li>
             ))}
