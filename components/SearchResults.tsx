@@ -92,12 +92,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleExportAll = (format: 'csv' | 'html') => {
+  const handleExportFiltered = (format: 'csv' | 'html') => {
       const filteredData: ScrapedData = {
           products: filteredProducts,
           qaItems: filteredQAItems,
       };
-      const filename = "web_intelligence_report";
+      const filename = "web_intelligence_report_filtered";
       if (format === 'csv') {
           const csvContent = generateFullReportCsv(filteredData);
           exportDataAsFile(`${filename}.csv`, csvContent, 'text/csv;charset=utf-8;');
@@ -107,6 +107,19 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
       }
       setIsExportMenuOpen(false);
   }
+
+  const handleExportUnfiltered = (format: 'csv' | 'html') => {
+    const filename = "web_intelligence_report_full";
+    if (format === 'csv') {
+        const csvContent = generateFullReportCsv(data);
+        exportDataAsFile(`${filename}.csv`, csvContent, 'text/csv;charset=utf-8;');
+    } else {
+        const htmlContent = generateFullReportHtml(data);
+        exportDataAsFile(`${filename}.html`, htmlContent, 'text/html;charset=utf-8;');
+    }
+    setIsExportMenuOpen(false);
+  }
+
 
   if (!hasData) {
       return null;
@@ -211,17 +224,25 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
                 className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold px-4 py-2 rounded-md transition"
             >
                 <ExportIcon className="w-5 h-5" />
-                Export All
+                Export...
             </button>
             {isExportMenuOpen && (
-                 <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-md shadow-lg z-10">
+                 <div className="absolute right-0 mt-2 w-56 bg-gray-900 border border-gray-700 rounded-md shadow-lg z-10">
                     <div className="py-1">
-                        <span className="block px-4 py-2 text-xs text-gray-500">Export filtered results</span>
-                        <button onClick={() => handleExportAll('csv')} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
-                            Download as CSV
+                        <div className="px-4 pt-2 pb-1 text-xs text-gray-500 font-semibold uppercase">Export Filtered View</div>
+                        <button onClick={() => handleExportFiltered('csv')} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                           Download Filtered as CSV
                         </button>
-                        <button onClick={() => handleExportAll('html')} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
-                           Download as HTML
+                        <button onClick={() => handleExportFiltered('html')} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                           Download Filtered as HTML
+                        </button>
+                        <div className="border-t border-gray-700 my-1"></div>
+                        <div className="px-4 pt-2 pb-1 text-xs text-gray-500 font-semibold uppercase">Export Full Dataset</div>
+                         <button onClick={() => handleExportUnfiltered('csv')} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                           Download All as CSV
+                        </button>
+                        <button onClick={() => handleExportUnfiltered('html')} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                           Download All as HTML
                         </button>
                     </div>
                 </div>
