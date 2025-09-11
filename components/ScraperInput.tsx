@@ -12,7 +12,6 @@ const ScraperInput: React.FC<ScraperInputProps> = ({ onScrape, isLoading }) => {
   const [error, setError] = useState<string>('');
   
   // Advanced options state
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const [topic, setTopic] = useState('');
   const [maxResults, setMaxResults] = useState('');
   const [crawlDepth, setCrawlDepth] = useState('');
@@ -79,25 +78,20 @@ const ScraperInput: React.FC<ScraperInputProps> = ({ onScrape, isLoading }) => {
 
         {/* Advanced Options */}
         <div className="pt-2">
-            <button type="button" onClick={() => setShowAdvanced(!showAdvanced)} className="text-sm text-cyan-400 hover:text-cyan-300">
-                {showAdvanced ? 'Hide' : 'Show'} Advanced Options
-            </button>
-            {showAdvanced && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3 p-4 bg-gray-900/50 rounded-lg border border-gray-700">
-                    <div>
-                        <label htmlFor="topic" className="block text-xs font-medium text-gray-400 mb-1">Topic / Keywords</label>
-                        <input type="text" id="topic" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g., 'battery issues'" className="w-full bg-gray-800 border border-gray-600 rounded-md py-2 px-3 text-sm focus:ring-1 focus:ring-cyan-500 outline-none" />
-                    </div>
-                    <div>
-                        <label htmlFor="max-results" className="block text-xs font-medium text-gray-400 mb-1">Max Results (each)</label>
-                        <input type="number" id="max-results" value={maxResults} onChange={e => setMaxResults(e.target.value)} placeholder="e.g., 25" className="w-full bg-gray-800 border border-gray-600 rounded-md py-2 px-3 text-sm focus:ring-1 focus:ring-cyan-500 outline-none" />
-                    </div>
-                    <div>
-                        <label htmlFor="crawl-depth" className="block text-xs font-medium text-gray-400 mb-1">Crawl Depth</label>
-                        <input type="number" id="crawl-depth" value={crawlDepth} onChange={e => setCrawlDepth(e.target.value)} placeholder="e.g., 2" className="w-full bg-gray-800 border border-gray-600 rounded-md py-2 px-3 text-sm focus:ring-1 focus:ring-cyan-500 outline-none" />
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3 p-4 bg-gray-900/50 rounded-lg border border-gray-700">
+                <div>
+                    <label htmlFor="topic" className="block text-xs font-medium text-gray-400 mb-1">Topic / Keywords</label>
+                    <input type="text" id="topic" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g., 'battery issues'" className="w-full bg-gray-800 border border-gray-600 rounded-md py-2 px-3 text-sm focus:ring-1 focus:ring-cyan-500 outline-none" />
                 </div>
-            )}
+                <div>
+                    <label htmlFor="max-results" className="block text-xs font-medium text-gray-400 mb-1">Max Results (each)</label>
+                    <input type="number" id="max-results" value={maxResults} onChange={e => setMaxResults(e.target.value)} placeholder="e.g., 25" className="w-full bg-gray-800 border border-gray-600 rounded-md py-2 px-3 text-sm focus:ring-1 focus:ring-cyan-500 outline-none" />
+                </div>
+                <div>
+                    <label htmlFor="crawl-depth" className="block text-xs font-medium text-gray-400 mb-1">Crawl Depth</label>
+                    <input type="number" id="crawl-depth" value={crawlDepth} onChange={e => setCrawlDepth(e.target.value)} placeholder="e.g., 2" className="w-full bg-gray-800 border border-gray-600 rounded-md py-2 px-3 text-sm focus:ring-1 focus:ring-cyan-500 outline-none" />
+                </div>
+            </div>
         </div>
 
 
