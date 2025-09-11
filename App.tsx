@@ -1,10 +1,9 @@
-
 import React, { useState, useCallback } from 'react';
 import ScraperInput from './components/ScraperInput';
 import SearchResults from './components/SearchResults';
 import LoadingSpinner from './components/LoadingSpinner';
 import { scrapeAndAnalyzeWebsite } from './services/geminiService';
-import { ScrapedData } from './types';
+import { ScrapedData, ScrapeOptions } from './types';
 import { WebIcon } from './components/Icons';
 
 const App: React.FC = () => {
@@ -12,12 +11,12 @@ const App: React.FC = () => {
   const [data, setData] = useState<ScrapedData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleScrape = useCallback(async (url: string) => {
+  const handleScrape = useCallback(async (url: string, options: ScrapeOptions) => {
     setIsLoading(true);
     setError(null);
     setData(null);
     try {
-      const result = await scrapeAndAnalyzeWebsite(url);
+      const result = await scrapeAndAnalyzeWebsite(url, options);
       setData(result);
     } catch (err) {
       if (err instanceof Error) {

@@ -1,6 +1,6 @@
-
 import { GoogleGenAI, GenerateContentResponse, Type } from "@google/genai";
-import { ScrapedData } from '../types';
+import { ScrapedData, ScrapeOptions } from '../types';
+import { validateScrapedData } from '../utils/validation';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
@@ -53,12 +53,8 @@ const responseSchema = {
   }
 };
 
-export const scrapeAndAnalyzeWebsite = async (url: string): Promise<ScrapedData> => {
-  if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
-  }
-
-  const prompt = `
+const buildPrompt = (url: string, options: ScrapeOptions): string => {
+  let prompt = `
     Act as an expert data scraper and analyst. I need you to virtually 'scrape' the website at the following URL: ${url}.
     Your task is to perform a deep crawl of the entire site, including product pages, shop sections, and any forums.
 
@@ -81,9 +77,30 @@ export const scrapeAndAnalyzeWebsite = async (url: string): Promise<ScrapedData>
     - Focus only on the main content related to products and forum discussions.
     - If a price or part number is not available, leave the field as an empty string.
     - Synthesize information. The answer summary should be a concise distillation of the discussion, not a direct copy-paste.
-
-    Return the final, cross-referenced data in the specified JSON format.
   `;
+
+  // Add optional constraints to the prompt
+  if (options.topic) {
+    prompt += `\n- **IMPORTANT**: Focus your scraping and analysis specifically on content related to the following topic/keywords: "${options.topic}". Prioritize pages and threads that match this topic.\n`;
+  }
+  if (options.crawlDepth) {
+    prompt += `- Limit your crawl to a depth of ${options.crawlDepth} pages from the starting URL. A depth of 1 means only the initial page and pages it links to directly.\n`;
+  }
+  if (options.maxResults) {
+    prompt += `- Limit your output to approximately ${options.maxResults} of the most relevant products and ${options.maxResults} of the most relevant Q&A items.\n`;
+  }
+
+  prompt += "\nReturn the final, cross-referenced data in the specified JSON format.";
+  return prompt;
+};
+
+
+export const scrapeAndAnalyzeWebsite = async (url: string, options: ScrapeOptions): Promise<ScrapedData> => {
+  if (!process.env.API_KEY) {
+    throw new Error("API_KEY environment variable not set");
+  }
+
+  const prompt = buildPrompt(url, options);
 
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
@@ -98,10 +115,16 @@ export const scrapeAndAnalyzeWebsite = async (url: string): Promise<ScrapedData>
     const jsonString = response.text.trim();
     // It is possible Gemini returns a markdown code block ```json ... ```
     const cleanedJsonString = jsonString.replace(/^```json\s*|```$/g, '');
-    const parsedData: ScrapedData = JSON.parse(cleanedJsonString);
-    return parsedData;
+    const parsedData = JSON.parse(cleanedJsonString);
+    
+    // Validate the data structure before returning
+    return validateScrapedData(parsedData);
+
   } catch (error) {
-    console.error("Error calling Gemini API:", error);
-    throw new Error("Failed to scrape and analyze website. The AI model might have had trouble processing the URL.");
+    console.error("Error during scraping and analysis:", error);
+    if (error instanceof Error && error.message.includes('validation failed')) {
+         throw new Error(`Data validation failed: The AI returned data in an unexpected format. ${error.message}`);
+    }
+    throw new Error("Failed to scrape and analyze website. The AI model might have had trouble processing the URL or the returned data was malformed.");
   }
 };

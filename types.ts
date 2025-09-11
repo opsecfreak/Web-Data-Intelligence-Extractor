@@ -1,4 +1,3 @@
-
 export interface ForumMention {
   threadTitle: string;
   summary: string;
@@ -24,4 +23,10 @@ export interface QAItem {
 export interface ScrapedData {
   products: Product[];
   qaItems: QAItem[];
+}
+
+export interface ScrapeOptions {
+  topic?: string;
+  maxResults?: number;
+  crawlDepth?: number;
 }

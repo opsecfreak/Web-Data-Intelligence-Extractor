@@ -1,9 +1,9 @@
-
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { ScrapedData, Product, QAItem } from '../types';
 import ProductCard from './ProductCard';
 import QACard from './QACard';
-import { SearchIcon, ProductIcon, QuestionIcon } from './Icons';
+import { SearchIcon, ProductIcon, QuestionIcon, ExportIcon } from './Icons';
+import { exportDataAsFile, generateFullReportCsv, generateFullReportHtml } from '../utils/export';
 
 interface SearchResultsProps {
   data: ScrapedData;
@@ -13,6 +13,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
   // Main search
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'products' | 'qa'>('products');
+  
+  // Export menu
+  const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+
 
   // Product filters
   const [minPrice, setMinPrice] = useState('');
@@ -76,6 +81,32 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
   }, [data.qaItems, searchQuery, relatedProductQuery]);
 
   const hasData = data.products.length > 0 || data.qaItems.length > 0;
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
+        setIsExportMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleExportAll = (format: 'csv' | 'html') => {
+      const filteredData: ScrapedData = {
+          products: filteredProducts,
+          qaItems: filteredQAItems,
+      };
+      const filename = "web_intelligence_report";
+      if (format === 'csv') {
+          const csvContent = generateFullReportCsv(filteredData);
+          exportDataAsFile(`${filename}.csv`, csvContent, 'text/csv;charset=utf-8;');
+      } else {
+          const htmlContent = generateFullReportHtml(filteredData);
+          exportDataAsFile(`${filename}.html`, htmlContent, 'text/html;charset=utf-8;');
+      }
+      setIsExportMenuOpen(false);
+  }
 
   if (!hasData) {
       return null;
@@ -155,23 +186,47 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
         />
       </div>
 
-      <div className="flex border-b border-gray-700 mb-6">
-        <button
-          onClick={() => setActiveTab('products')}
-          className={`flex items-center gap-2 px-4 py-2 text-lg font-medium transition-colors ${activeTab === 'products' ? 'border-b-2 border-cyan-500 text-cyan-400' : 'text-gray-400 hover:text-white'}`}
-          aria-pressed={activeTab === 'products'}
-        >
-          <ProductIcon />
-          Products ({filteredProducts.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('qa')}
-          className={`flex items-center gap-2 px-4 py-2 text-lg font-medium transition-colors ${activeTab === 'qa' ? 'border-b-2 border-teal-500 text-teal-400' : 'text-gray-400 hover:text-white'}`}
-          aria-pressed={activeTab === 'qa'}
-        >
-          <QuestionIcon />
-          Q&A ({filteredQAItems.length})
-        </button>
+      <div className="flex flex-wrap justify-between items-center border-b border-gray-700 mb-6 gap-4">
+        <div className="flex">
+            <button
+            onClick={() => setActiveTab('products')}
+            className={`flex items-center gap-2 px-4 py-2 text-lg font-medium transition-colors ${activeTab === 'products' ? 'border-b-2 border-cyan-500 text-cyan-400' : 'text-gray-400 hover:text-white'}`}
+            aria-pressed={activeTab === 'products'}
+            >
+            <ProductIcon />
+            Products ({filteredProducts.length})
+            </button>
+            <button
+            onClick={() => setActiveTab('qa')}
+            className={`flex items-center gap-2 px-4 py-2 text-lg font-medium transition-colors ${activeTab === 'qa' ? 'border-b-2 border-teal-500 text-teal-400' : 'text-gray-400 hover:text-white'}`}
+            aria-pressed={activeTab === 'qa'}
+            >
+            <QuestionIcon />
+            Q&A ({filteredQAItems.length})
+            </button>
+        </div>
+        <div className="relative" ref={exportMenuRef}>
+            <button 
+                onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
+                className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold px-4 py-2 rounded-md transition"
+            >
+                <ExportIcon className="w-5 h-5" />
+                Export All
+            </button>
+            {isExportMenuOpen && (
+                 <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-md shadow-lg z-10">
+                    <div className="py-1">
+                        <span className="block px-4 py-2 text-xs text-gray-500">Export filtered results</span>
+                        <button onClick={() => handleExportAll('csv')} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                            Download as CSV
+                        </button>
+                        <button onClick={() => handleExportAll('html')} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                           Download as HTML
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
       </div>
 
       <FilterBar />
