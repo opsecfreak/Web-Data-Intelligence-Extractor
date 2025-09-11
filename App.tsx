@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import ScraperInput from './components/ScraperInput';
 import SearchResults from './components/SearchResults';
 import LoadingSpinner from './components/LoadingSpinner';
+import SummaryView from './components/SummaryView';
 import { scrapeAndAnalyzeWebsite } from './services/geminiService';
 import { ScrapedData, ScrapeOptions } from './types';
 import { WebIcon } from './components/Icons';
@@ -64,7 +65,10 @@ const App: React.FC = () => {
             </div>
           )}
           {data ? (
-             <SearchResults data={data} />
+             <>
+                <SummaryView data={data} />
+                <SearchResults data={data} />
+             </>
           ) : (
             !isLoading && !error && <WelcomeScreen />
           )}
