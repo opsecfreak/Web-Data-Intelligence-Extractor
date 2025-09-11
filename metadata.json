@@ -1,0 +1,5 @@
+{
+  "name": "Web Data Intelligence Extractor",
+  "description": "An intelligent web scraper that extracts, analyzes, and cross-references product and forum data from websites. It categorizes information like product details and Q&A, providing a searchable interface to find compatibility and user experiences.",
+  "requestFramePermissions": []
+}
