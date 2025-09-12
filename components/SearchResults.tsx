@@ -6,6 +6,34 @@ import { SearchIcon, ProductIcon, QuestionIcon, ExportIcon } from './Icons';
 import { exportDataAsFile, generateFullReportCsv, generateFullReportHtml, generatePartsListCsv } from '../utils/export';
 import { parsePrice } from '../utils/parsing';
 
+/**
+ * A simple fuzzy search function that checks if characters of a pattern
+ * appear in a string in the correct sequence, but not necessarily consecutively.
+ * This is case-insensitive.
+ * @param pattern The search query.
+ * @param str The string to search within.
+ * @returns True if it's a match, false otherwise.
+ */
+const fuzzyMatch = (pattern: string, str: string): boolean => {
+  if (!pattern) return true; // Empty search query matches everything
+  if (!str) return false;    // No match if string is empty or null
+
+  const patternLower = pattern.toLowerCase();
+  const strLower = str.toLowerCase();
+  
+  let patternIdx = 0;
+  let strIdx = 0;
+  
+  while (patternIdx < patternLower.length && strIdx < strLower.length) {
+    if (patternLower[patternIdx] === strLower[strIdx]) {
+      patternIdx++;
+    }
+    strIdx++;
+  }
+  
+  return patternIdx === patternLower.length;
+};
+
 interface SearchResultsProps {
   data: ScrapedData;
 }
@@ -37,9 +65,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
     
     const filtered = data.products.filter(p => {
       const searchMatch =
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (p.partNumber && p.partNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        p.description.toLowerCase().includes(searchQuery.toLowerCase());
+        fuzzyMatch(searchQuery, p.name) ||
+        (p.partNumber && fuzzyMatch(searchQuery, p.partNumber)) ||
+        fuzzyMatch(searchQuery, p.description);
 
       if (!searchMatch) return false;
 
@@ -106,15 +134,15 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
     if (!data.qaItems) return [];
     const filtered = data.qaItems.filter(qa => {
       const searchMatch = 
-        qa.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        qa.answerSummary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        qa.relatedProducts.some(p => p.toLowerCase().includes(searchQuery.toLowerCase()));
+        fuzzyMatch(searchQuery, qa.question) ||
+        fuzzyMatch(searchQuery, qa.answerSummary) ||
+        qa.relatedProducts.some(p => fuzzyMatch(searchQuery, p));
 
       if (!searchMatch) return false;
 
       const relatedProductMatch = 
         !relatedProductQuery || 
-        qa.relatedProducts.some(p => p.toLowerCase().includes(relatedProductQuery.toLowerCase()));
+        qa.relatedProducts.some(p => fuzzyMatch(relatedProductQuery, p));
 
       if (!relatedProductMatch) return false;
 
