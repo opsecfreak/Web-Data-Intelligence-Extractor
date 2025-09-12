@@ -3,7 +3,7 @@ import { ScrapedData, Product, QAItem } from '../types';
 import ProductCard from './ProductCard';
 import QACard from './QACard';
 import { SearchIcon, ProductIcon, QuestionIcon, ExportIcon } from './Icons';
-import { exportDataAsFile, generateFullReportCsv, generateFullReportHtml } from '../utils/export';
+import { exportDataAsFile, generateFullReportCsv, generateFullReportHtml, generatePartsListCsv } from '../utils/export';
 import { parsePrice } from '../utils/parsing';
 
 interface SearchResultsProps {
@@ -24,6 +24,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [hasPartNumber, setHasPartNumber] = useState(false);
+  const [priceFilterExcludesUnpriced, setPriceFilterExcludesUnpriced] = useState(true);
   const [productSort, setProductSort] = useState('name-asc');
 
   // Q&A filters and sorting
@@ -37,22 +38,26 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
     const filtered = data.products.filter(p => {
       const searchMatch =
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.partNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (p.partNumber && p.partNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
         p.description.toLowerCase().includes(searchQuery.toLowerCase());
 
       if (!searchMatch) return false;
 
-      // Price filter
+      // Price filter logic
       const priceNum = parsePrice(p.price);
       const min = minPrice ? parseFloat(minPrice) : NaN;
       const max = maxPrice ? parseFloat(maxPrice) : NaN;
-      
-      if (priceNum !== null) { // Product has a valid price
-        if (!isNaN(min) && priceNum < min) return false;
-        if (!isNaN(max) && priceNum > max) return false;
-      } else { // Product has no valid price
-        // If a price filter is active, products without a price should be excluded.
-        if (!isNaN(min) || !isNaN(max)) return false;
+      const isPriceFilterActive = !isNaN(min) || !isNaN(max);
+
+      if (isPriceFilterActive) {
+        if (priceNum !== null) { // Product has a valid price
+          if (!isNaN(min) && priceNum < min) return false;
+          if (!isNaN(max) && priceNum > max) return false;
+        } else { // Product has no valid price
+          if (priceFilterExcludesUnpriced) {
+             return false; // Exclude if checkbox is checked
+          }
+        }
       }
       
       // Part number filter
@@ -95,7 +100,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
       }
     });
 
-  }, [data.products, searchQuery, minPrice, maxPrice, hasPartNumber, productSort]);
+  }, [data.products, searchQuery, minPrice, maxPrice, hasPartNumber, priceFilterExcludesUnpriced, productSort]);
 
   const filteredQAItems = useMemo((): QAItem[] => {
     if (!data.qaItems) return [];
@@ -174,6 +179,18 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
     setIsExportMenuOpen(false);
   }
 
+  const handleExportPartsListFiltered = () => {
+    const csvContent = generatePartsListCsv(filteredProducts);
+    exportDataAsFile('filtered_parts_list.csv', csvContent, 'text/csv;charset=utf-8;');
+    setIsExportMenuOpen(false);
+  };
+  
+  const handleExportPartsListUnfiltered = () => {
+      const csvContent = generatePartsListCsv(data.products);
+      exportDataAsFile('full_parts_list.csv', csvContent, 'text/csv;charset=utf-8;');
+      setIsExportMenuOpen(false);
+  };
+
 
   if (!hasData) {
       return null;
@@ -197,6 +214,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
                         id="max-price" type="number" placeholder="e.g., 500" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)}
                         className="w-20 bg-gray-900 border border-gray-600 rounded-md py-1 px-2 text-xs focus:ring-1 focus:ring-cyan-500 outline-none"
                     />
+                </div>
+                 <div className="flex items-center gap-2">
+                    <input
+                        id="exclude-unpriced" type="checkbox" checked={priceFilterExcludesUnpriced} onChange={(e) => setPriceFilterExcludesUnpriced(e.target.checked)}
+                        className="h-4 w-4 rounded bg-gray-700 border-gray-600 text-cyan-600 focus:ring-cyan-500"
+                    />
+                    <label htmlFor="exclude-unpriced" className="text-xs text-gray-400 select-none cursor-pointer">Exclude unpriced</label>
                 </div>
                 <div className="flex items-center gap-2">
                     <input
@@ -281,6 +305,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
                             </button>
                             <button onClick={() => handleExportUnfiltered('html')} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
                             Download All as HTML
+                            </button>
+                            <div className="border-t border-gray-700 my-1"></div>
+                            <div className="px-4 pt-2 pb-1 text-xs text-gray-500 font-semibold uppercase">Parts List</div>
+                             <button onClick={handleExportPartsListFiltered} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                                Download Filtered as CSV
+                            </button>
+                             <button onClick={handleExportPartsListUnfiltered} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                                Download All as CSV
                             </button>
                         </div>
                     </div>

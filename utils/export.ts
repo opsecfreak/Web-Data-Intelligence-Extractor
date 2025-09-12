@@ -67,6 +67,22 @@ export const generateFullReportCsv = (data: ScrapedData): string => {
     return fullCsv;
 };
 
+export const generatePartsListCsv = (products: Product[]): string => {
+  const headers = ['Product Name', 'Part Number'];
+  const productsWithParts = products.filter(p => p.partNumber && p.partNumber.trim() !== '');
+
+  if (productsWithParts.length === 0) {
+    return 'Product Name,Part Number\nNo products with part numbers found in the selection.';
+  }
+
+  const rows = productsWithParts.map(p =>
+    [p.name, p.partNumber].map(escapeCsvField).join(',')
+  );
+
+  return [headers.join(','), ...rows].join('\n');
+};
+
+
 // --- HTML Generation ---
 
 const getHtmlStyles = () => `
