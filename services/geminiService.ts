@@ -13,9 +13,9 @@ const responseSchema = {
       items: {
         type: Type.OBJECT,
         properties: {
-          name: { type: Type.STRING, description: "The full name of the product." },
+          name: { type: Type.STRING, description: "The full name of the product or part." },
           price: { type: Type.STRING, description: "The price of the product, formatted as a string (e.g., '$99.99')." },
-          partNumber: { type: Type.STRING, description: "The manufacturer part number or SKU." },
+          partNumber: { type: Type.STRING, description: "The manufacturer part number, SKU, or other unique identifier. This is a critical field." },
           description: { type: Type.STRING, description: "A brief description of the product." },
           url: { type: Type.STRING, description: "The direct URL to the product page." },
           mentions: {
@@ -70,10 +70,10 @@ const buildPrompt = (options: ScrapeOptions): string => {
 
     Your task is to follow this three-step process:
 
-    1.  **Analyze Product Sources:** First, deeply crawl the "Product Data Sources" URLs. From these sites, identify individual products and for each one, extract:
-        - Product Name
+    1.  **Analyze Product Sources:** First, deeply crawl the "Product Data Sources" URLs. From these sites, identify individual products and parts. It is critical that you find and extract the part number for every item. For each product or part, extract:
+        - Product/Part Name
         - Price
-        - Part Number or SKU
+        - Part Number (or SKU, Manufacturer Part Number, etc.). This is a critical field. If a page lists multiple parts, extract each one as a separate product entry.
         - A brief description
         - The direct URL to the product page.
 

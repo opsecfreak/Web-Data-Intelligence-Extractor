@@ -18,7 +18,7 @@ const getInitialState = <T,>(key: string, defaultValue: T): T => {
 };
 
 const ScraperInput: React.FC<ScraperInputProps> = ({ onScrape, isLoading }) => {
-  const [productUrls, setProductUrls] = useState<string[]>(() => getInitialState('productUrls', ['https://mobiletechspecialists.com/shop']));
+  const [productUrls, setProductUrls] = useState<string[]>(() => getInitialState('productUrls', ['https://mobiletechspecialists.com/shop', 'https://yuneecskins.com']));
   const [forumUrls, setForumUrls] = useState<string[]>(() => getInitialState('forumUrls', ['https://yuneecpilots.com']));
   
   const [newProductUrl, setNewProductUrl] = useState('');
