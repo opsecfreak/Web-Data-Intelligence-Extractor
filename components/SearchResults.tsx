@@ -3,7 +3,7 @@ import { ScrapedData, Product, QAItem } from '../types';
 import ProductCard from './ProductCard';
 import QACard from './QACard';
 import { SearchIcon, ProductIcon, QuestionIcon, ExportIcon } from './Icons';
-import { exportDataAsFile, generateFullReportCsv, generateFullReportHtml, generatePartsListCsv } from '../utils/export';
+import { exportDataAsFile, generateFullReportCsv, generateFullReportHtml, generatePartsListCsv, generateMentionsCsv } from '../utils/export';
 import { parsePrice } from '../utils/parsing';
 
 /**
@@ -219,6 +219,18 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
       setIsExportMenuOpen(false);
   };
 
+  const handleExportMentionsFiltered = () => {
+    const csvContent = generateMentionsCsv(filteredProducts);
+    exportDataAsFile('filtered_forum_mentions.csv', csvContent, 'text/csv;charset=utf-8;');
+    setIsExportMenuOpen(false);
+  };
+  
+  const handleExportMentionsUnfiltered = () => {
+      const csvContent = generateMentionsCsv(data.products);
+      exportDataAsFile('full_forum_mentions.csv', csvContent, 'text/csv;charset=utf-8;');
+      setIsExportMenuOpen(false);
+  };
+
 
   if (!hasData) {
       return null;
@@ -340,6 +352,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
                                 Download Filtered as CSV
                             </button>
                              <button onClick={handleExportPartsListUnfiltered} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                                Download All as CSV
+                            </button>
+                            <div className="border-t border-gray-700 my-1"></div>
+                            <div className="px-4 pt-2 pb-1 text-xs text-gray-500 font-semibold uppercase">Forum Mentions</div>
+                             <button onClick={handleExportMentionsFiltered} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                                Download Filtered as CSV
+                            </button>
+                             <button onClick={handleExportMentionsUnfiltered} className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
                                 Download All as CSV
                             </button>
                         </div>

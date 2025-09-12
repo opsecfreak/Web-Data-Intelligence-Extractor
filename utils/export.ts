@@ -82,6 +82,31 @@ export const generatePartsListCsv = (products: Product[]): string => {
   return [headers.join(','), ...rows].join('\n');
 };
 
+export const generateMentionsCsv = (products: Product[]): string => {
+  const headers = ['Product Name', 'Mention Thread Title', 'Mention Summary', 'Mention URL'];
+  const rows: string[] = [];
+
+  products.forEach(product => {
+    if (product.mentions && product.mentions.length > 0) {
+      product.mentions.forEach(mention => {
+        const row = [
+          product.name,
+          mention.threadTitle,
+          mention.summary,
+          mention.url
+        ].map(escapeCsvField).join(',');
+        rows.push(row);
+      });
+    }
+  });
+
+  if (rows.length === 0) {
+    return 'Product Name,Mention Thread Title,Mention Summary,Mention URL\nNo forum mentions found in the selection.';
+  }
+
+  return [headers.join(','), ...rows].join('\n');
+};
+
 
 // --- HTML Generation ---
 
