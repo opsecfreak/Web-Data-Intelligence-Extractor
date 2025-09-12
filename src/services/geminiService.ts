@@ -2,6 +2,7 @@ import { GoogleGenAI, GenerateContentResponse, Type } from "@google/genai";
 import { ScrapedData, ScrapeOptions, DataSources } from '../types';
 import { validateScrapedData } from '../utils/validation';
 
+// FIX: Per coding guidelines, API key must be read from process.env.API_KEY. This also resolves the TypeScript error on import.meta.env.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
 const responseSchema = {
@@ -111,6 +112,7 @@ const buildPrompt = (options: ScrapeOptions): string => {
 
 
 export const scrapeAndAnalyzeWebsite = async (options: ScrapeOptions): Promise<ScrapedData> => {
+  // FIX: Check for process.env.API_KEY as per coding guidelines.
   if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable not set");
   }
