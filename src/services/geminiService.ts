@@ -57,41 +57,38 @@ const responseSchema = {
 const buildPrompt = (options: ScrapeOptions): string => {
     const { sources, topic, crawlDepth, maxResults } = options;
     
-    const productUrlsList = sources.productUrls.length > 0 ? sources.productUrls.map(url => `- ${url}`).join('\n') : 'None provided.';
-    const forumUrlsList = sources.forumUrls.length > 0 ? sources.forumUrls.map(url => `- ${url}`).join('\n') : 'None provided.';
+    const urlsList = sources.urls.length > 0 ? sources.urls.map(url => `- ${url}`).join('\n') : 'None provided.';
 
     let prompt = `
-    Act as an expert data scraper and analyst. I need you to perform a targeted analysis of the websites provided. The websites are separated into two categories: Product Data Sources and Forum Data Sources.
+    Act as an expert data scraper and analyst. I need you to perform a targeted analysis of the websites provided in the Data Sources list.
 
-    **Product Data Sources:**
-    ${productUrlsList}
-
-    **Forum Data Sources:**
-    ${forumUrlsList}
+    **Data Sources:**
+    ${urlsList}
 
     Your task is to follow this three-step process:
 
-    1.  **Analyze Product Sources:** First, deeply crawl the "Product Data Sources" URLs. From these sites, identify individual products and parts. It is critical that you find and extract the part number for every item. For each product or part, extract:
-        - Product/Part Name
-        - Price
-        - Part Number (or SKU, Manufacturer Part Number, etc.). This is a critical field. If a page lists multiple parts, extract each one as a separate product entry.
-        - A brief description
-        - The direct URL to the product page.
+    1.  **Analyze All Sources:** First, deeply crawl all the "Data Sources" URLs.
 
-    2.  **Analyze Forum Sources:** Second, deeply crawl the "Forum Data Sources" URLs. From these sites, identify discussion threads and for each, extract:
-        - The primary question being asked.
-        - A concise summary of the most helpful answer or the general consensus.
-        - The URL to the thread.
-        - A list of any specific products (by name or part number) mentioned.
+    2.  **Extract Key Information:** As you crawl, your goal is to identify and extract two distinct types of information from any of the sites:
+        -   **Product/Part Data:** Look for e-commerce pages, product listings, or parts catalogs. For each individual product or part you find, extract:
+            - Product/Part Name
+            - Price
+            - Part Number (or SKU, Manufacturer Part Number, etc.). This is a critical field. If a page lists multiple parts, extract each one as a separate product entry.
+            - A brief description
+            - The direct URL to the product page.
+        -   **Q&A/Discussion Data:** Look for forum threads, community Q&A sections, or support pages. For each relevant discussion you find, extract:
+            - The primary question being asked.
+            - A concise summary of the most helpful answer or the general consensus.
+            - The URL to the thread.
+            - A list of any specific products (by name or part number) mentioned.
 
-    3.  **Cross-Reference Data (CRITICAL STEP):** Finally, for each product you identified in Step 1, search through all the forum data from Step 2 for any mentions of it (by name or part number). If you find mentions, create a summary of the context (e.g., "Users report this part is compatible with Drone Model X," or "Common issue with this module is a faulty connection."). Link this summary and the source thread to the corresponding product.
+    3.  **Cross-Reference Data (CRITICAL STEP):** Finally, for each product you identified, search through all the discussion data you gathered for any mentions of it (by name or part number). If you find mentions, create a summary of the context (e.g., "Users report this part is compatible with Drone Model X," or "Common issue with this module is a faulty connection."). Link this summary and the source thread URL to the corresponding product.
 
     **Rules for Extraction:**
-    - Scour product data ONLY from the Product Data Sources.
-    - Scour Q&A/discussion data ONLY from the Forum Data Sources.
+    - Scour for both product and Q&A data from ALL provided URLs. A single URL might contain both.
     - Ignore junk information: advertisements, navigation menus, footers, sidebars, and irrelevant boilerplate text.
     - Focus only on the main content related to products and forum discussions.
-    - If a price or part number is not available, leave the field as an empty string.
+    - If a price or part number is not available for a product, leave the field as an empty string.
     - Synthesize information. The answer summary should be a concise distillation of the discussion, not a direct copy-paste.
   `;
 

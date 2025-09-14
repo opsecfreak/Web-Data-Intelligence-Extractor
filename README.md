@@ -1,4 +1,3 @@
-
 # Web Data Intelligence Extractor
 
 An intelligent web scraper that leverages the Google Gemini API to extract, analyze, and cross-reference product and forum data from websites. It categorizes information like product details, pricing, part numbers, and Q&A, providing a powerful, searchable interface to find compatibility information and user experiences.
@@ -8,13 +7,14 @@ An intelligent web scraper that leverages the Google Gemini API to extract, anal
 ## Core Features
 
 -   **AI-Powered Scraping**: Uses the Gemini API to understand the structure and content of websites, eliminating the need for brittle, selector-based scraping logic.
--   **Dual-Source Analysis**: Ingests URLs for both product-focused sites (e.g., e-commerce shops) and discussion forums.
+-   **Unified Data Sourcing**: Provide a single list of URLs, and the AI will intelligently find both product pages and discussion forums within them.
 -   **Intelligent Cross-Referencing**: Automatically identifies mentions of products within forum discussions and links them, providing valuable context and user feedback.
 -   **Structured Data Extraction**: Returns clean, structured JSON data containing product details (name, price, part number) and Q&A items.
 -   **Interactive UI**: A rich user interface for viewing, searching, and filtering the extracted data.
 -   **Fuzzy Search**: Find products and Q&A items even with minor misspellings in your search query.
 -   **Advanced Filtering & Sorting**: Easily filter products by price range, part number availability, and sort results by various criteria.
 -   **Comprehensive Exporting**: Export filtered or complete datasets as CSV or HTML reports, including specialized "Parts List" and "Forum Mentions" reports.
+-   **Engaging UI**: Features a dynamic progress bar during analysis to provide better user feedback.
 -   **Persistent Configuration**: Remembers your data source URLs in local storage for convenience.
 
 ## Tech Stack
@@ -26,11 +26,12 @@ An intelligent web scraper that leverages the Google Gemini API to extract, anal
 
 ## How It Works
 
-1.  **Input**: The user provides a list of "Product Data Source" URLs (e.g., online shops) and "Forum Data Source" URLs.
+1.  **Input**: The user provides a single, unified list of "Data Source" URLs. These can be a mix of online shops, forums, manufacturer sites, etc.
 2.  **Prompt Generation**: The application constructs a detailed, task-specific prompt for the Gemini API, instructing it to act as an expert data scraper. The prompt specifies the URLs, the required data schema, and the critical cross-referencing steps.
-3.  **AI Analysis**: The Gemini API receives the prompt. It programmatically accesses the provided URLs, analyzes their content, extracts the relevant information (products, parts, Q&A), and performs the cross-referencing to link forum mentions to products.
-4.  **Structured Response**: The API returns the meticulously structured data in a JSON format that matches the requested schema.
-5.  **Validation & Display**: The React application receives the JSON, validates its structure, and then renders it in a user-friendly interface, complete with summary statistics, search, and filtering capabilities.
+3.  **AI Analysis**: The Gemini API receives the prompt. It programmatically accesses the provided URLs, analyzes their content, intelligently distinguishes between product/part information and Q&A/discussion threads, and extracts the relevant data.
+4.  **Cross-Referencing**: The AI performs the crucial step of linking forum mentions to the products it discovered, enriching the product data with real-world user feedback.
+5.  **Structured Response**: The API returns the meticulously structured data in a JSON format that matches the requested schema.
+6.  **Validation & Display**: The React application receives the JSON, validates its structure, and then renders it in a user-friendly interface, complete with summary statistics, search, and filtering capabilities.
 
 ## Getting Started
 

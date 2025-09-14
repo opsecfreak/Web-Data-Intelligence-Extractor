@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import ScraperInput from './components/ScraperInput';
 import SearchResults from './components/SearchResults';
-import LoadingSpinner from './components/LoadingSpinner';
+import ProgressBar from './components/ProgressBar';
 import SummaryView from './components/SummaryView';
 import { scrapeAndAnalyzeWebsite } from './services/geminiService';
 import { ScrapedData, ScrapeOptions } from './types';
@@ -35,7 +35,7 @@ const App: React.FC = () => {
       <WebIcon className="w-20 h-20 mx-auto text-cyan-500 opacity-30" />
       <h2 className="mt-4 text-xl font-semibold text-gray-300">Welcome to the Web Data Intelligence Extractor</h2>
       <p className="mt-3 max-w-2xl mx-auto text-gray-400">
-        Configure your data sources above. Add specific URLs for product listings and separate URLs for forums. The AI will then analyze both sets of sources to extract and cross-reference valuable insights.
+        Add URLs to the Data Sources list above. The AI will crawl these sites to find and cross-reference both product information and user discussions, providing a comprehensive analysis.
       </p>
     </div>
   );
@@ -57,7 +57,7 @@ const App: React.FC = () => {
         <ScraperInput onScrape={handleScrape} isLoading={isLoading} />
 
         <div className="mt-8">
-          {isLoading && <LoadingSpinner message="AI is analyzing the websites... this may take a moment." />}
+          {isLoading && <ProgressBar />}
           {error && (
             <div className="max-w-3xl mx-auto bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-center">
               <p className="font-bold">Analysis Failed</p>

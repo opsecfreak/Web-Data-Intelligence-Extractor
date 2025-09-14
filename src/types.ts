@@ -26,8 +26,7 @@ export interface ScrapedData {
 }
 
 export interface DataSources {
-  productUrls: string[];
-  forumUrls: string[];
+  urls: string[];
 }
 
 export interface ScrapeOptions {
