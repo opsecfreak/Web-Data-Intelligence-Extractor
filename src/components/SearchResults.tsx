@@ -96,8 +96,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
       // Part number filter - more robust check
       if (hasPartNumber) {
         const partNum = p.partNumber?.trim().toLowerCase();
-        // Exclude if part number is missing, empty, or a known non-value like 'N/A'
-        if (!partNum || ['n/a', 'none'].includes(partNum)) {
+        // Exclude if part number is missing, empty, or a known non-value like 'N/A', 'none', etc.
+        if (!partNum || ['n/a', 'none', 'not applicable', 'tbd', '-'].includes(partNum)) {
           return false;
         }
       }

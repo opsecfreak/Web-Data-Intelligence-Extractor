@@ -69,7 +69,11 @@ export const generateFullReportCsv = (data: ScrapedData): string => {
 
 export const generatePartsListCsv = (products: Product[]): string => {
   const headers = ['Product Name', 'Part Number'];
-  const productsWithParts = products.filter(p => p.partNumber && p.partNumber.trim() !== '');
+  const productsWithParts = products.filter(p => {
+    const partNum = p.partNumber?.trim().toLowerCase();
+    // Only include if part number exists and is not a known non-value
+    return !!partNum && !['n/a', 'none', 'not applicable', 'tbd', '-'].includes(partNum);
+  });
 
   if (productsWithParts.length === 0) {
     return 'Product Name,Part Number\nNo products with part numbers found in the selection.';
