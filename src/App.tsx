@@ -5,7 +5,7 @@ import ProgressBar from './components/ProgressBar';
 import SummaryView from './components/SummaryView';
 import { scrapeAndAnalyzeWebsite } from './services/geminiService';
 import { ScrapedData, ScrapeOptions } from './types';
-import { WebIcon } from './components/Icons';
+import { WebIcon, ExclamationTriangleIcon } from './components/Icons';
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -58,19 +58,26 @@ const App: React.FC = () => {
 
         <div className="mt-8">
           {isLoading && <ProgressBar />}
-          {error && (
-            <div className="max-w-3xl mx-auto bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-center">
-              <p className="font-bold">Analysis Failed</p>
-              <p className="text-sm">{error}</p>
+          
+          {!isLoading && error && (
+            <div className="max-w-3xl mx-auto bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-center flex flex-col items-center gap-2">
+              <ExclamationTriangleIcon className="w-8 h-8 text-red-400" />
+              <div>
+                <p className="font-bold">Analysis Failed</p>
+                <p className="text-sm">{error}</p>
+              </div>
             </div>
           )}
-          {data ? (
-             <>
-                <SummaryView data={data} />
-                <SearchResults data={data} />
-             </>
-          ) : (
-            !isLoading && !error && <WelcomeScreen />
+
+          {!isLoading && !error && data && (
+            <>
+              <SummaryView data={data} />
+              <SearchResults data={data} />
+            </>
+          )}
+
+          {!isLoading && !error && !data && (
+            <WelcomeScreen />
           )}
         </div>
       </main>

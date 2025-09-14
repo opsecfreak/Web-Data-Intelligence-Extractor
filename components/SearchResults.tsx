@@ -49,6 +49,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
 
 
   // Product filters and sorting
+  const [productNameQuery, setProductNameQuery] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [hasPartNumber, setHasPartNumber] = useState(false);
@@ -70,6 +71,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
         fuzzyMatch(searchQuery, p.description);
 
       if (!searchMatch) return false;
+
+      // Product Name filter
+      if (productNameQuery && !fuzzyMatch(productNameQuery, p.name)) {
+        return false;
+      }
 
       // Price filter logic
       const priceNum = parsePrice(p.price);
@@ -128,7 +134,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
       }
     });
 
-  }, [data.products, searchQuery, minPrice, maxPrice, hasPartNumber, priceFilterExcludesUnpriced, productSort]);
+  }, [data.products, searchQuery, productNameQuery, minPrice, maxPrice, hasPartNumber, priceFilterExcludesUnpriced, productSort]);
 
   const filteredQAItems = useMemo((): QAItem[] => {
     if (!data.qaItems) return [];
@@ -241,6 +247,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
           return (
             <div className="bg-gray-800/50 p-2 rounded-lg border border-gray-700 mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
                 <span className="font-semibold text-gray-300 text-sm">Filters:</span>
+                <div className="flex items-center gap-2">
+                    <label htmlFor="product-name" className="text-xs text-gray-400">Product Name:</label>
+                    <input
+                        id="product-name" type="text" placeholder="Filter by name..." value={productNameQuery} onChange={(e) => setProductNameQuery(e.target.value)}
+                        className="w-32 bg-gray-900 border border-gray-600 rounded-md py-1 px-2 text-xs focus:ring-1 focus:ring-cyan-500 outline-none"
+                    />
+                </div>
                 <div className="flex items-center gap-2">
                     <label htmlFor="min-price" className="text-xs text-gray-400">Min Price:</label>
                     <input
