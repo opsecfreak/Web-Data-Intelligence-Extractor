@@ -2,13 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Product } from '../types';
 import { LinkIcon, ExportIcon } from './Icons';
 import { generateProductCsv, generateProductHtml, exportDataAsFile } from '../utils/export';
+import HighlightText from './HighlightText';
 
 
 interface ProductCardProps {
   product: Product;
+  highlightQuery?: string;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, highlightQuery = '' }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +41,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 transition-all duration-300 hover:shadow-cyan-500/10 hover:border-cyan-700 hover:-translate-y-1 flex flex-col h-full">
       <div className="flex justify-between items-start">
         <div className="flex-1 pr-4">
-          <h3 className="text-lg font-bold text-cyan-400">{product.name}</h3>
+          <h3 className="text-lg font-bold text-cyan-400">
+            <HighlightText text={product.name} highlight={highlightQuery} />
+          </h3>
           <p className="text-sm text-gray-400">Part #: {product.partNumber || 'N/A'}</p>
         </div>
         <div className="relative" ref={menuRef}>
@@ -65,7 +69,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
        <div className="text-sm font-medium text-green-400 bg-green-900/50 px-2 py-0.5 rounded-md self-start my-2">
           {product.price || 'N/A'}
         </div>
-      <p className="text-gray-300 flex-grow text-sm">{product.description}</p>
+      <p className="text-gray-300 flex-grow text-sm">
+        <HighlightText text={product.description} highlight={highlightQuery} />
+      </p>
       {product.url && (
         <a 
           href={product.url} 

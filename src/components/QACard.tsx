@@ -2,12 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { QAItem } from '../types';
 import { LinkIcon, ExportIcon } from './Icons';
 import { generateQaCsv, generateQaHtml, exportDataAsFile } from '../utils/export';
+import HighlightText from './HighlightText';
 
 interface QACardProps {
   item: QAItem;
+  highlightQuery?: string;
 }
 
-const QACard: React.FC<QACardProps> = ({ item }) => {
+const QACard: React.FC<QACardProps> = ({ item, highlightQuery = '' }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -38,7 +40,9 @@ const QACard: React.FC<QACardProps> = ({ item }) => {
        <div className="flex justify-between items-start mb-2">
             <div className="flex-1 pr-4">
                 <p className="text-sm text-gray-400">Question:</p>
-                <h3 className="text-lg font-bold text-teal-400">"{item.question}"</h3>
+                <h3 className="text-lg font-bold text-teal-400">
+                  "<HighlightText text={item.question} highlight={highlightQuery} />"
+                </h3>
             </div>
             <div className="relative" ref={menuRef}>
                 <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-gray-400 hover:text-white rounded-full transition">
@@ -63,7 +67,9 @@ const QACard: React.FC<QACardProps> = ({ item }) => {
 
       <div className="mt-2 flex-grow">
         <p className="text-sm text-gray-400">Answer Summary:</p>
-        <p className="text-gray-300 text-sm">{item.answerSummary}</p>
+        <p className="text-gray-300 text-sm">
+          <HighlightText text={item.answerSummary} highlight={highlightQuery} />
+        </p>
       </div>
       
       {item.relatedProducts && item.relatedProducts.length > 0 && (

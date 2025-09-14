@@ -421,7 +421,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
         {activeTab === 'products' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" aria-live="polite">
             {filteredProducts.length > 0 ? (
-                filteredProducts.map((product, index) => <ProductCard key={`${product.url}-${index}`} product={product} />)
+                filteredProducts.map((product, index) => <ProductCard key={`${product.url}-${index}`} product={product} highlightQuery={searchQuery} />)
             ) : (
                 <p className="text-gray-400 md:col-span-2 lg:col-span-3 text-center py-12">No products match your search or filters.</p>
             )}
@@ -430,7 +430,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ data }) => {
         {activeTab === 'qa' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3" aria-live="polite">
             {filteredQAItems.length > 0 ? (
-                filteredQAItems.map((item, index) => <QACard key={`${item.threadUrl}-${index}`} item={item} />)
+                filteredQAItems.map((item, index) => <QACard key={`${item.threadUrl}-${index}`} item={item} highlightQuery={searchQuery} />)
             ) : (
                 <p className="text-gray-400 md:col-span-2 text-center py-12">No Q&A items match your search or filters.</p>
             )}
